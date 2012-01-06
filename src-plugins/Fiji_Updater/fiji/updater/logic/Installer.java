@@ -121,8 +121,7 @@ public class Installer extends Downloader {
 		plugin.setLocalVersion(digest, plugin.getTimestamp());
 		plugin.setStatus(PluginObject.Status.INSTALLED);
 
-		if (Util.isLauncher(fileName) &&
-				!Util.platform.startsWith("win")) try {
+		if (plugin.executable && !Util.platform.startsWith("win")) try {
 			Runtime.getRuntime().exec(new String[] {
 				"chmod", "0755", download.destination
 			});
