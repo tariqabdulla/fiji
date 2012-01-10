@@ -69,7 +69,7 @@ public class Fake {
 			return;
 		System.err.println("=================== !!!WARNING!!! ===================\n"
 			+ "Fiji Build was started using the 'fiji' executable!!!\n"
-			+ "Please use 'ImageJ' next time.\n"
+			+ "Please use 'imagej' next time.\n"
 			+ "=====================================================");
 	}
 

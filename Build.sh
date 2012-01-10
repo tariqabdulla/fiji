@@ -73,10 +73,10 @@ FreeBSD)
 	fi;;
 *)
 	platform=
-	# copy and use bin/ImageJ-other.sh
-	test -f "$CWD/ImageJ" &&
-	test "$CWD/bin/ImageJ" -nt "$CWD/bin/ImageJ-other.sh" ||
-	cp "$CWD/bin/ImageJ-other.sh" "$CWD/ImageJ"
+	# copy and use bin/imagej-other.sh
+	test -f "$CWD/imagej" &&
+	test "$CWD/bin/imagej" -nt "$CWD/bin/imagej-other.sh" ||
+	cp "$CWD/bin/imagej-other.sh" "$CWD/imagej"
 	TOOLS_JAR="$(ls -t /usr/jdk*/lib/tools.jar \
 		/usr/local/jdk*/lib/tools.jar 2> /dev/null |
 		head -n 1)"
@@ -86,7 +86,7 @@ esac
 
 test -n "$platform" &&
 test -z "$JAVA_HOME" &&
-JAVA_HOME="$("$CWD"/precompiled/ImageJ-"$platform" --print-java-home 2> /dev/null)"
+JAVA_HOME="$("$CWD"/precompiled/imagej-"$platform" --print-java-home 2> /dev/null)"
 
 if test -n "$platform" && test ! -d "$JAVA_HOME"
 then
@@ -153,9 +153,9 @@ test "a$targets" != a$jar &&
 }
 
 # make sure the ImageJ launcher is up-to-date
-test "a$targets" != a$jar -a "a$targets" != aImageJ &&
-test ! -f "$CWD"/ImageJ -o "$CWD"/ImageJ.c -nt "$CWD"/ImageJ$exe && {
-	(cd "$CWD" && sh "$(basename "$0")" $variables ImageJ) || exit
+test "a$targets" != a$jar -a "a$targets" != aimagej &&
+test ! -f "$CWD"/imagej -o "$CWD"/imagej.c -nt "$CWD"/imagej$exe && {
+	(cd "$CWD" && sh "$(basename "$0")" $variables imagej) || exit
 }
 
 # on Win64, with a 32-bit compiler, do not try to compile
@@ -167,23 +167,23 @@ win64)
 	case "$CC,$(gcc --version)" in
 	,*mingw32*)
 		# cannot compile!
-		test "$CWD"/ImageJ.exe -nt "$CWD"/ImageJ.c &&
-		test "$CWD"/ImageJ.exe -nt "$CWD"/precompiled/ImageJ-win64.exe &&
-		test "$CWD"/ImageJ.exe -nt "$CWD"/Fakefile &&
-		test "$CWD"/ImageJ.exe -nt "$CWD"/$jar ||
-		cp precompiled/ImageJ-win64.exe ImageJ.exe
+		test "$CWD"/imagej.exe -nt "$CWD"/imagej.c &&
+		test "$CWD"/imagej.exe -nt "$CWD"/precompiled/imagej-win64.exe &&
+		test "$CWD"/imagej.exe -nt "$CWD"/Fakefile &&
+		test "$CWD"/imagej.exe -nt "$CWD"/$jar ||
+		cp precompiled/imagej-win64.exe imagej.exe
 	esac
 esac
 
 # still needed for Windows, which cannot overwrite files that are in use
-test -f "$CWD"/ImageJ$exe -a -f "$CWD"/$jar &&
-test "a$targets" != a$jar -a "a$targets" != aImageJ &&
-exec "$CWD"/ImageJ$exe --build "$@"
+test -f "$CWD"/imagej$exe -a -f "$CWD"/$jar &&
+test "a$targets" != a$jar -a "a$targets" != aimagej &&
+exec "$CWD"/imagej$exe --build "$@"
 
 # fall back to precompiled
-test -f "$CWD"/precompiled/ImageJ-$platform$exe \
+test -f "$CWD"/precompiled/imagej-$platform$exe \
 	-a -f "$CWD"/precompiled/${jar##*/} &&
-exec "$CWD"/precompiled/ImageJ-$platform$exe --build -- "$@"
+exec "$CWD"/precompiled/imagej-$platform$exe --build -- "$@"
 
 export SYSTEM_JAVA=java
 export SYSTEM_JAVAC=javac

@@ -1,9 +1,9 @@
-/ImageJ-*
+/imagej-*
 !/fiji-*.copyright
 !/fiji-*.README.Debian
 *.log
 *.pyc
-/ImageJ
+/imagej
 *.substvars
 *.debhelper
 /files

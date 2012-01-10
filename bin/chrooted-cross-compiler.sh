@@ -49,7 +49,7 @@ test -f $CHROOT/opt/mac/bin/i686-apple-darwin8-gcc \
 	-a -f $CHROOT/usr/local/bin/i386-mingw32-gcc ||
 dchroot "cd IMCROSS && sudo make ImageJ"
 
-SOURCE=ImageJ.c
+SOURCE=imagej.c
 STRIP=
 RESOURCE=
 PLATFORM="$1"; shift
@@ -57,7 +57,7 @@ case "$PLATFORM" in
 win32)
 	CC=/usr/local/bin/i386-mingw32-gcc
 	STRIP=/usr/local/bin/i386-mingw32-strip
-	TARGET=ImageJ-win32.exe
+	TARGET=imagej-win32.exe
 
 	echo "101 ICON fiji.ico" > $CHROOT/$CHROOT_HOME/tmp.rc
 	cp images/fiji.ico $CHROOT/$CHROOT_HOME
@@ -66,11 +66,11 @@ win32)
 ;;
 tiger)
 	CC=/opt/mac/bin/i686-apple-darwin8-gcc
-	TARGET=ImageJ-tiger
+	TARGET=imagej-tiger
 ;;
 linux32)
 	CC=/usr/bin/gcc
-	TARGET=ImageJ-linux32
+	TARGET=imagej-linux32
 ;;
 *)
 	echo "Unknown platform: $PLATFORM!" >&2

@@ -82,7 +82,7 @@ do
 	log="$(git log --no-merges --format="%s" --reverse "$@" -- $f)"
 	test -z "$log" || {
 		case "$f" in
-		ImageJ.c)
+		imagej.c)
 			f="ImageJ Launcher"
 			;;
 		src-plugins/*)

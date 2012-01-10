@@ -68,13 +68,13 @@ prepareNewFijiRoot(root, asDeveloper) {
 	root.mkdirs();
 
 	toCopy = new String[] {
-		"ImageJ",
+		"imagej",
 		"jars/ij.jar", "jars/ij-launcher.jar", "plugins/Fiji_Updater.jar",
 		"jars/bsh-2.0b4.jar", "jars/jsch-0.1.44.jar", "jars/javassist.jar"
 	};
 
 	if (asDeveloper)
-		toCopy = unshiftArray(toCopy, "ImageJ.c");
+		toCopy = unshiftArray(toCopy, "imagej.c");
 
 	for (String name : toCopy)
 		copyFile(new File(ijDir, name),  new File(root, name));

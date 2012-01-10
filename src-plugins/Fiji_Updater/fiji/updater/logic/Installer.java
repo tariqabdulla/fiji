@@ -73,8 +73,8 @@ public class Installer extends Downloader {
 				if (old.exists())
 					old.delete();
 				orig.renameTo(old);
-				if (name.equals(Util.macPrefix + "ImageJ-tiger")) try {
-					Util.patchInfoPList("ImageJ-tiger");
+				if (name.equals(Util.macPrefix + "imagej-tiger")) try {
+					Util.patchInfoPList("imagej-tiger");
 				} catch (IOException e) {
 					UserInterface.get().error("Could not patch Info.plist");
 				}

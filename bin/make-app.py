@@ -1,5 +1,5 @@
 #!/bin/sh
-''''exec "$(dirname "$0")"/../ImageJ --jython "$0" "$@" # (call again with fiji)'''
+''''exec "$(dirname "$0")"/../imagej --jython "$0" "$@" # (call again with fiji)'''
 
 import os
 import shutil
@@ -73,14 +73,14 @@ def copy_platform_specific_files(platform):
 		macos='Fiji.app/Contents/MacOS/'
 		os.makedirs(macos)
 		if (host_platform == "osx10.5"):
-			shutil.copy('ImageJ', macos + 'ImageJ-macosx')
-			shutil.copy('ImageJ-tiger', macos)
+			shutil.copy('imagej', macos + 'imagej-macosx')
+			shutil.copy('imagej-tiger', macos)
 		else:
-			shutil.copy('precompiled/ImageJ-macosx',
-					macos + 'ImageJ-macosx')
-			shutil.copy('precompiled/ImageJ-tiger', macos)
-		chmod(macos + 'ImageJ-macosx', 0755)
-		chmod(macos + 'ImageJ-tiger', 0755)
+			shutil.copy('precompiled/imagej-macosx',
+					macos + 'imagej-macosx')
+			shutil.copy('precompiled/imagej-tiger', macos)
+		chmod(macos + 'imagej-macosx', 0755)
+		chmod(macos + 'imagej-tiger', 0755)
 		shutil.copy('Info.plist', 'Fiji.app/Contents/')
 		images='Fiji.app/Contents/Resources/'
 		os.makedirs(images)
@@ -91,9 +91,9 @@ def copy_platform_specific_files(platform):
 		else:
 			exe = ''
 
-		binary = 'ImageJ-' + platform + exe
+		binary = 'imagej-' + platform + exe
 		if (host_platform == platform):
-			shutil.copy('ImageJ' + exe, 'Fiji.app/' + binary)
+			shutil.copy('imagej' + exe, 'Fiji.app/' + binary)
 		else:
 			shutil.copy('precompiled/' + binary, 'Fiji.app/' + binary)
 		chmod('Fiji.app/' + binary, 0755)

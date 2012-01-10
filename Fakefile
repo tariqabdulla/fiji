@@ -233,15 +233,15 @@ PLUGIN_TARGETS=plugins/Jython_Interpreter.jar \
 
 LEGACYLAUNCHER=fiji
 
-all <- ImageJ $LEGACYLAUNCHER $SUBMODULE_TARGETS $PLUGIN_TARGETS
+all <- imagej $LEGACYLAUNCHER $SUBMODULE_TARGETS $PLUGIN_TARGETS
 
-# The "run" rule just executes ./ImageJ (as long as the file "run" does not exist...)
+# The "run" rule just executes ./imagej (as long as the file "run" does not exist...)
 # It has items on the right side, because these would be passed to the executable.
 
 run[] <- all run-fiji
-run-fiji[./ImageJ] <-
+run-fiji[./imagej] <-
 DEBUG_ARGS=-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n
-dev[./ImageJ $DEBUG_ARGS] <-
+dev[./imagej $DEBUG_ARGS] <-
 
 
 # JDK
@@ -297,21 +297,21 @@ CLASSPATH(jars/imglib2-ops.jar)=jars/imglib2.jar
 jars/imglib2-ops.jar <- modules/imglib/
 CLASSPATH(jars/imglib2-ui.jar)=jars/imglib2.jar:jars/imglib2-io.jar:plugins/loci_tools.jar
 jars/imglib2-ui.jar <- jars/imglib2-io.jar modules/imglib/
-jars/clojure.jar <- ImageJ modules/clojure/
-plugins/loci_tools.jar <- ImageJ modules/bio-formats/
+jars/clojure.jar <- imagej modules/clojure/
+plugins/loci_tools.jar <- imagej modules/bio-formats/
 CLASSPATH(jars/VectorString.jar)=jars/ij.jar:jars/Jama-1.0.2.jar:$JAVA3D_JARS
 jars/VectorString.jar <- modules/TrakEM2/
 CLASSPATH(plugins/TrakEM2_.jar)=jars/ij.jar:jars/jai_core.jar:jars/jai_codec.jar:jars/VectorString.jar:jars/postgresql-8.2-506.jdbc3.jar:jars/jcommon-1.0.12.jar:jars/jfreechart-1.0.13.jar:jars/edu_mines_jtk.jar:jars/VIB-lib.jar:plugins/VIB_.jar:jars/mpicbg.jar:plugins/loci_tools.jar:plugins/bUnwarpJ_.jar:plugins/level_sets.jar:plugins/Fiji_Plugins.jar:jars/Jama-1.0.2.jar:jars/imglib.jar:jars/imglib-algorithms.jar:jars/imglib-ij.jar:plugins/Simple_Neurite_Tracer.jar:plugins/3D_Viewer.jar:plugins/Lasso_and_Blow_Tool.jar:$JAVA3D_JARS
 plugins/TrakEM2_.jar <- modules/TrakEM2/
 plugins/ij-ImageIO_.jar <- modules/ij-plugins/
-jars/jacl.jar <- ImageJ modules/tcljava/
-jars/batik.jar <- ImageJ modules/batik/
-jars/junit-4.5.jar <- ImageJ modules/junit/
-jars/rsyntaxtextarea.jar <- ImageJ modules/RSyntaxTextArea/
-jars/autocomplete.jar <- ImageJ modules/AutoComplete/
-jars/weka.jar <- ImageJ jars/fiji-compat.jar modules/weka/
-jars/jython.jar <- ImageJ modules/jython/
-jars/commons-math.jar <- ImageJ modules/commons-math/
+jars/jacl.jar <- imagej modules/tcljava/
+jars/batik.jar <- imagej modules/batik/
+jars/junit-4.5.jar <- imagej modules/junit/
+jars/rsyntaxtextarea.jar <- imagej modules/RSyntaxTextArea/
+jars/autocomplete.jar <- imagej modules/AutoComplete/
+jars/weka.jar <- imagej jars/fiji-compat.jar modules/weka/
+jars/jython.jar <- imagej modules/jython/
+jars/commons-math.jar <- imagej modules/commons-math/
 jars/javassist.jar <- modules/javassist/
 jars/jsch-0.1.44.jar <- modules/jsch/
 COPYDEPENDENCIES(jars/ij-app.jar)=true
@@ -517,7 +517,7 @@ CFLAGS(win32)=$COMMONCFLAGS $WINOPTS \
 CFLAGS(win64)=$COMMONCFLAGS $WINOPTS \
 	-DJAVA_HOME='"$FIJI_JAVA_HOME_UNEXPANDED(win64)"' -DJAVA_LIB_PATH='"$JAVA_LIB_PATH(win64)"'
 
-# Include 64-bit architectures only in ./ImageJ (as opposed to ./ImageJ-tiger),
+# Include 64-bit architectures only in ./imagej (as opposed to ./imagej-tiger),
 # and only on MacOSX
 MACOPTS(osx10.3)=-I/System/Library/Frameworks/JavaVM.Framework/Headers -Iincludes \
 	-DMACOSX \
@@ -536,28 +536,28 @@ LDFLAGS(win32)=$LDFLAGS $WINOPTS
 CFLAGS(freebsd)=$COMMONCFLAGS \
 	-DJAVA_HOME='"$FIJI_JAVA_HOME_UNEXPANDED(freebsd)"' -DJAVA_LIB_PATH='"$JAVA_LIB_PATH(freebsd)"'
 
-CFLAGS(ImageJ)=$COMMONCFLAGS $MACOPTS
-LDFLAGS(ImageJ)=$LDFLAGS $MACOPTS
+CFLAGS(imagej)=$COMMONCFLAGS $MACOPTS
+LDFLAGS(imagej)=$LDFLAGS $MACOPTS
 
 LIBS(linux32)=-ldl -lpthread
 LIBS(linux64)=-ldl -lpthread
 LIBS(macosx)=-weak -framework CoreFoundation -framework ApplicationServices \
 	-framework JavaVM
 
-CLASSPATH(ImageJ)=jars/ij-launcher.jar:jars/fiji-compat.jar:jars/ij.jar:jars/javassist.jar
-ImageJ <- ImageJ.c
+CLASSPATH(imagej)=jars/ij-launcher.jar:jars/fiji-compat.jar:jars/ij.jar:jars/javassist.jar
+imagej <- imagej.c
 
-CFLAGS(ImageJ-macosx)=$COMMONCFLAGS $MACOPTS(osx10.5)
-LDFLAGS(ImageJ-macosx)=$LDFLAGS $MACOPTS(osx10.5)
-ImageJ-macosx <- ImageJ.c
+CFLAGS(imagej-macosx)=$COMMONCFLAGS $MACOPTS(osx10.5)
+LDFLAGS(imagej-macosx)=$LDFLAGS $MACOPTS(osx10.5)
+imagej-macosx <- imagej.c
 
-CFLAGS(ImageJ-tiger)=$COMMONCFLAGS $MACOPTS(osx10.4)
-LDFLAGS(ImageJ-tiger)=$LDFLAGS $MACOPTS(osx10.4)
-ImageJ-tiger <- ImageJ.c
+CFLAGS(imagej-tiger)=$COMMONCFLAGS $MACOPTS(osx10.4)
+LDFLAGS(imagej-tiger)=$LDFLAGS $MACOPTS(osx10.4)
+imagej-tiger <- imagej.c
 
-CFLAGS(ImageJ-panther)=$COMMONCFLAGS $MACOPTS(osx10.3)
-LDFLAGS(ImageJ-panther)=$LDFLAGS $MACOPTS(osx10.3)
-ImageJ-panther <- ImageJ.c
+CFLAGS(imagej-panther)=$COMMONCFLAGS $MACOPTS(osx10.3)
+LDFLAGS(imagej-panther)=$LDFLAGS $MACOPTS(osx10.3)
+imagej-panther <- imagej.c
 
 # Cross-compiling (works only on Linux64 so far)
 
@@ -565,28 +565,28 @@ all-cross[] <- cross-win32 cross-win64 cross-linux32 cross-macosx cross-tiger
 # cross-tiger does not work yet
 
 cross-tiger[bin/cross-compiler.bsh tiger \
-	$CFLAGS(ImageJ-panther) $LIBS(macosx)] <- ImageJ.c
+	$CFLAGS(imagej-panther) $LIBS(macosx)] <- imagej.c
 cross-macosx[bin/cross-compiler.bsh macosx \
-	$CFLAGS(ImageJ-panther) $LIBS(macosx)] <- ImageJ.c
-cross-*[bin/cross-compiler.bsh * $CFLAGS(*) $LDFLAGS(*) $LIBS(*)] <- ImageJ.c
+	$CFLAGS(imagej-panther) $LIBS(macosx)] <- imagej.c
+cross-*[bin/cross-compiler.bsh * $CFLAGS(*) $LDFLAGS(*) $LIBS(*)] <- imagej.c
 
 # legacy launcher
 
-fiji[bin/copy-file.py $PRE $TARGET] <- ImageJ
+fiji[bin/copy-file.py $PRE $TARGET] <- imagej
 
 # Precompiled stuff
 
-LAUNCHER(*)=precompiled/ImageJ-$PLATFORM
-LAUNCHER(win32)=precompiled/ImageJ-win32.exe
-LAUNCHER(win64)=precompiled/ImageJ-win64.exe
-LAUNCHER(osx10.4)=precompiled/ImageJ-macosx
-LAUNCHER(osx10.5)=precompiled/ImageJ-macosx precompiled/ImageJ-tiger
-precompile-ImageJ[] <- $LAUNCHER
+LAUNCHER(*)=precompiled/imagej-$PLATFORM
+LAUNCHER(win32)=precompiled/imagej-win32.exe
+LAUNCHER(win64)=precompiled/imagej-win64.exe
+LAUNCHER(osx10.4)=precompiled/imagej-macosx
+LAUNCHER(osx10.5)=precompiled/imagej-macosx precompiled/imagej-tiger
+precompile-imagej[] <- $LAUNCHER
 
-precompiled/ImageJ-tiger[bin/copy-file.py $PRE $TARGET] <- ImageJ-tiger
-precompiled/ImageJ-macosx[bin/copy-file.py $PRE $TARGET] <- ImageJ-macosx
-# this rule only matches precompiled/ImageJ-$PLATFORM
-precompiled/ImageJ-*[bin/copy-file.py $PRE $TARGET] <- ImageJ
+precompiled/imagej-tiger[bin/copy-file.py $PRE $TARGET] <- imagej-tiger
+precompiled/imagej-macosx[bin/copy-file.py $PRE $TARGET] <- imagej-macosx
+# this rule only matches precompiled/imagej-$PLATFORM
+precompiled/imagej-*[bin/copy-file.py $PRE $TARGET] <- imagej
 
 precompile-fake[] <- precompiled/fake.jar
 precompiled/fake.jar <- jars/fake.jar
@@ -636,17 +636,17 @@ precompiled/javassist.jar <- jars/javassist.jar
 precompiled/jsch-0.1.44.jar <- jars/jsch-0.1.44.jar
 precompiled/* <- plugins/*
 
-precompile[] <- precompile-ImageJ precompile-fake precompile-submodules
+precompile[] <- precompile-imagej precompile-fake precompile-submodules
 
 # precompiled fall back
 
-missingPrecompiledFallBack[./ImageJ --update update $TARGET] <- \
+missingPrecompiledFallBack[./imagej --update update $TARGET] <- \
 	jars/ij-launcher.jar jars/fiji-compat.jar plugins/Fiji_Updater.jar
 
 # Portable application/.app
 
 all-apps[] <- app-macosx app-linux32 app-linux64 app-win32 app-win64
-MACOSX_TIGER_LAUNCHER(macosx)=ImageJ-tiger
+MACOSX_TIGER_LAUNCHER(macosx)=imagej-tiger
 app-*[bin/make-app.py * $PLATFORM] <- all $MACOSX_TIGER_LAUNCHER
 
 app-all[bin/make-app.py all $PLATFORM] <- all
@@ -684,7 +684,7 @@ check[] <- check-launchers check-submodules
 
 LAUNCHERS=$LAUNCHER(linux32) $LAUNCHER(linux64) \
 	$LAUNCHER(win32) $LAUNCHER(win64) $LAUNCHER(macosx)
-check-launchers[bin/up-to-date-check.py ImageJ.c $LAUNCHERS] <-
+check-launchers[bin/up-to-date-check.py imagej.c $LAUNCHERS] <-
 
 check-submodules[] <- check-ij check-TrakEM2 check-mpicbg
 

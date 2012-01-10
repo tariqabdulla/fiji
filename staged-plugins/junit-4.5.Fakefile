@@ -7,4 +7,4 @@ all <- $JAR
 MAINCLASS(junit-4.5.jar)=org.junit.runner.JUnitCore
 $JAR <- $DISTDIR/$JAR
 
-$DISTDIR/$JAR[../../ImageJ --ant $ANTTARGET] <-
+$DISTDIR/$JAR[../../imagej --ant $ANTTARGET] <-

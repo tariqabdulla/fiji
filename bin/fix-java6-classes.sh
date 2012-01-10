@@ -1,7 +1,7 @@
 #!/bin/sh
 
 FIJIROOT="$(dirname "$0")/.."
-FIJI="$FIJIROOT"/ImageJ
+FIJI="$FIJIROOT"/imagej
 RETRO="$FIJIROOT"/retro/retrotranslator-transformer-1.2.7.jar
 
 die () {
@@ -11,7 +11,7 @@ die () {
 
 case $# in
 0)
-	OFFENDERS=$(cd "$FIJIROOT" && ./ImageJ tests/class_versions.py |
+	OFFENDERS=$(cd "$FIJIROOT" && ./imagej tests/class_versions.py |
 		sed -n -e 's/(.*//' -e 's/^\t//p' |
 		uniq)
 	;;

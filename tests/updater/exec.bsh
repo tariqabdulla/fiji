@@ -18,7 +18,7 @@ execute(args) {
 
 startFiji(root, type, bsh) {
 	args = new String[] {
-		new File(root, "ImageJ").getAbsolutePath(),
+		new File(root, "imagej").getAbsolutePath(),
 		"--java-home=" + System.getProperty("java.home"),
 		new File(libDir, "client.bsh").getAbsolutePath(),
 		bsh,

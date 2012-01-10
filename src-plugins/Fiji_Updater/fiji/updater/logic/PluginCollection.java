@@ -288,7 +288,7 @@ public class PluginCollection extends ArrayList<PluginObject> {
 				Status.OBSOLETE_MODIFIED,
 				Status.OBSOLETE_UNINSTALLED
 			/* the old updater will only checksum these! */
-			})), or(startsWith("ImageJ-"),
+			})), or(startsWith("imagej-"),
 				and(startsWith(new String[] {
 					"plugins/", "jars/", "retro/", "misc/"
 					}), endsWith(".jar")))));
