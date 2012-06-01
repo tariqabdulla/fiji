@@ -23,6 +23,8 @@ add_to_classpath $HOME/.m2/repository/net/java/sezpoz/
 add_to_classpath /usr/share/java/
 add_to_classpath modules/ij-plugins/
 add_to_classpath $HOME/.m2/repository/com/apple/AppleJavaExtensions/1.5/
+add_to_classpath jars/jcommon.jar
+add_to_classpath jars/jfreechart.jar
 
 find src-plugins modules -name \*.java |
 grep -ve src-plugins/FFMPEG_IO/fiji/ffmpeg/ \
