@@ -60,6 +60,7 @@ public class MiniMaven {
 	protected Fake fake;
 	protected final static File mavenRepository;
 
+move into minimaven.Util
 	static {
 		File repository = new File(System.getProperty("user.home"), ".m2/repository");
 		try {
@@ -70,6 +71,7 @@ public class MiniMaven {
 		mavenRepository = repository;
 	}
 
+move into minimaven.Util
 	protected static boolean isInteractiveConsole() {
 		// We want to compile/run with Java5, so we cannot test System.console() directly
 		try {
@@ -79,10 +81,12 @@ public class MiniMaven {
 		}
 	}
 
+Get rid of this
 	public MiniMaven(Fake fake, PrintStream err, boolean verbose) throws FakeException {
 		this(fake, err, verbose, false);
 	}
 
+move into minimaven.Environment
 	public MiniMaven(Fake fake, PrintStream err, boolean verbose, boolean debug) throws FakeException {
 		this.fake = fake == null ? new Fake() : fake;
 		this.err = err;
@@ -102,11 +106,13 @@ public class MiniMaven {
 		}
 	}
 
+minimaven.Util
 	protected void print80(String string) {
 		int length = string.length();
 		err.print((verbose || length < 80 ? string : string.substring(0, 80)) + endLine);
 	}
 
+minimaven.Environment
 	public POM parse(File file) throws IOException, ParserConfigurationException, SAXException {
 		return parse(file, null);
 	}
@@ -159,10 +165,10 @@ public class MiniMaven {
 
 		if (pom.parentCoordinate != null && pom.parent == null) {
 			Coordinate dependency = pom.expand(pom.parentCoordinate);
-			POM root = pom.getRoot();
-			pom.parent = pom.findPOM(dependency, true, false);
-
+Probably replace this by
+			pom.parent = localPOMCache.get(dependency.getKey());
 			if (pom.parent == null) {
+refactor into getParentFile(File).
 				File parentDirectory = pom.directory.getParentFile();
 				if (parentDirectory == null) try {
 					parentDirectory = pom.directory.getCanonicalFile().getParentFile();
@@ -180,6 +186,7 @@ public class MiniMaven {
 				if (pom.maybeDownloadAutomatically(pom.parentCoordinate, !verbose, downloadAutomatically))
 					pom.parent = pom.findPOM(dependency, !verbose, downloadAutomatically);
 			}
+Now that we have the localPOMCache, should we stop forcing a single root POM?
 			// prevent infinite loops (POMs without parents get the current root as parent)
 			if (pom.parent != null) {
 				if (pom.parent.parent == pom)
@@ -194,6 +201,7 @@ public class MiniMaven {
 		return pom;
 	}
 
+Can we get rid of this? Maybe it is still needed for tools.jar, but else?
 	protected POM fakePOM(File target, Coordinate dependency) {
 		POM pom = new POM(target, null);
 		pom.directory = target.getParentFile();
@@ -218,6 +226,7 @@ public class MiniMaven {
 		return pom;
 	}
 
+minimaven.Environment
 	public void addMultiProjectRoot(File root) {
 		try {
 			multiProjectRoots.push(root.getCanonicalFile());
@@ -226,6 +235,8 @@ public class MiniMaven {
 		}
 	}
 
+
+minimaven.Environment
 	public void excludeFromMultiProjects(File directory) {
 		try {
 			excludedFromMultiProjects.add(directory.getCanonicalFile());
@@ -259,6 +270,7 @@ public class MiniMaven {
 			return "".equals(s) ? null : s;
 		}
 
+use these!
 		public String getJarName() {
 			return getJarName(false);
 		}
@@ -307,6 +319,8 @@ public class MiniMaven {
 		}
 	}
 
+Separate the XML handler out so that parsed POM instances do not need to keep cruft
+Refactor POM into its own file, with a reference to MiniMaven for err handling.
 	public class POM extends DefaultHandler implements Comparable<POM> {
 		protected boolean buildFromSource, built;
 		protected File directory, target;
@@ -333,6 +347,7 @@ public class MiniMaven {
 			return addChild(parse(new File(new File(directory, name), "pom.xml"), this));
 		}
 
+// do we need to use LinkedHashSet<POM> instead of POM[]?
 		protected POM addChild(POM child) {
 			POM[] newChildren = new POM[children.length + 1];
 			System.arraycopy(children, 0, newChildren, 0, children.length);
@@ -352,12 +367,19 @@ public class MiniMaven {
 			}
 		}
 
+Get rid of this
 		public void clean() throws IOException, ParserConfigurationException, SAXException {
+			clean(true);
+		}
+
+Teach SubFake to use clean(false)?
+		public void clean(boolean recursive) throws IOException, ParserConfigurationException, SAXException {
 			if (!buildFromSource)
 				return;
-			for (POM child : getDependencies(true))
-				if (child != null)
-					child.clean();
+			if (recursive)
+				for (POM child : getDependencies(true))
+					if (child != null)
+						child.clean(true);
 			if (target.isDirectory())
 				rmRF(target);
 			else if (target.exists())
@@ -373,17 +395,20 @@ public class MiniMaven {
 			download();
 		}
 
+Offer a way to do this with a GAV parameter, to replace Fake's fall-back rule?
 		protected void download() throws FileNotFoundException {
 			if (buildFromSource || target.exists())
 				return;
 			download(coordinate, true);
 		}
 
+minimaven.Environment
 		protected void download(Coordinate dependency, boolean quiet) throws FileNotFoundException {
 			if (dependency.version == null) {
 				err.println("Version of " + dependency.artifactId + " is null; Skipping.");
 				return;
 			}
+Discover the repositories from the top instead, in a LinkedHashSet so that children's repositories are preferred
 			for (String url : getRoot().getRepositories()) try {
 				downloadAndVerify(url, dependency, quiet);
 				return;
@@ -445,6 +470,7 @@ public class MiniMaven {
 					addToJarRecursively(out, file, prefix + file.getName() + "/");
 		}
 
+Get rid of these convenience functions
 		public void build() throws FakeException, IOException, ParserConfigurationException, SAXException {
 			build(false);
 		}
@@ -500,6 +526,7 @@ public class MiniMaven {
 					err.println("using the class path: " + classPath);
 				}
 				String[] array = arguments.toArray(new String[arguments.size()]);
+Factor out callJavac from Fake
 				if (fake != null)
 					fake.callJavac(array, verbose);
 			}
@@ -589,6 +616,8 @@ public class MiniMaven {
 			return lastModified;
 		}
 
+Use these!
+Move them more to the top
 		public String getGroup() {
 			return coordinate.groupId;
 		}
@@ -633,6 +662,7 @@ public class MiniMaven {
 		 * @throws ParserConfigurationException
 		 * @throws SAXException
 		 */
+Implement onlyNewer
 		public void copyDependencies(File directory, boolean onlyNewer) throws IOException, ParserConfigurationException, SAXException {
 			for (POM pom : getDependencies(true, "test", "provided")) {
 				File file = pom.getTarget();
@@ -642,6 +672,7 @@ public class MiniMaven {
 			}
 		}
 
+Get rid of this
 		public Set<POM> getDependencies() throws IOException, ParserConfigurationException, SAXException {
 			return getDependencies(false);
 		}
@@ -652,6 +683,8 @@ public class MiniMaven {
 			return set;
 		}
 
+
+Convert String[] into Set<String> for efficiency
 		public void getDependencies(Set<POM> result, boolean excludeOptionals, String... excludeScopes) throws IOException, ParserConfigurationException, SAXException {
 			for (Coordinate dependency : dependencies) {
 				if (excludeOptionals && dependency.optional)
@@ -670,6 +703,7 @@ public class MiniMaven {
 					}
 				}
 				// make sure that snapshot .pom files are updated once a day
+if (!offlineMode && dependency.artifactId.equals("imglib2")) { new Exception("Hello").printStackTrace(); System.exit(1); }
 				if (!offlineMode && downloadAutomatically && pom != null && dependency.version != null &&
 						dependency.version.endsWith("-SNAPSHOT") && dependency.snapshotVersion == null &&
 						pom.directory.getPath().startsWith(mavenRepository.getPath())) {
@@ -686,6 +720,7 @@ public class MiniMaven {
 			}
 		}
 
+Get rid of this
 		protected boolean arrayContainsString(String[] array, String key) {
 			for (String string : array)
 				if (string.equals(key))
@@ -735,6 +770,7 @@ public class MiniMaven {
 			if (key.equals("project.basedir"))
 				return directory.getPath();
 			if (parent == null) {
+Are these all needed at all? I guess not, except for the fallback to System.getProperty()!
 				// hard-code a few variables
 				if (key.equals("bio-formats.groupId"))
 					return "loci";
@@ -749,12 +785,14 @@ public class MiniMaven {
 			return parent.getProperty(key);
 		}
 
+Get rid of this! Probably shadows an error
 		protected POM[] getChildren() {
 			if (children == null)
 				return new POM[0];
 			return children;
 		}
 
+We do not need this
 		protected POM getRoot() {
 			POM result = this;
 			while (result.parent != null)
@@ -763,19 +801,18 @@ public class MiniMaven {
 		}
 
 		protected Set<String> getRepositories() {
-			Set<String> result = new TreeSet<String>();
+			Set<String> result = new LinkedHashSet<String>();
 			getRepositories(result);
 			return result;
 		}
 
 		protected void getRepositories(Set<String> result) {
+			result.addAll(repositories);
 			// add a default to the root
 			if (parent == null)
 				result.add("http://repo1.maven.org/maven2/");
-			result.addAll(repositories);
-			for (POM child : getChildren())
-				if (child != null)
-					child.getRepositories(result);
+			else
+				parent.getRepositories(result);
 		}
 
 		protected POM findPOM(Coordinate dependency, boolean quiet, boolean downloadAutomatically) throws IOException, ParserConfigurationException, SAXException {
@@ -783,6 +820,8 @@ public class MiniMaven {
 					(dependency.groupId == null || dependency.groupId.equals(expand(coordinate.groupId))) &&
 					(dependency.version == null || coordinate.version == null || dependency.version.equals(expand(coordinate.version))))
 				return this;
+
+Why do this only for groupId == null? Besides, groupId == null is illegal in Maven, is it not?
 			if (dependency.groupId == null) {
 				POM result = null;
 				for (String key : localPOMCache.keySet()) {
@@ -802,8 +841,11 @@ public class MiniMaven {
 				return result;
 			}
 
+Still needed?
 			if (dependency.groupId == null && dependency.artifactId.equals("jdom"))
 				dependency.groupId = "jdom";
+
+Do not fall back to jars/ and plugins/, try modules/ first, then fall back to .m2/repository
 			// fall back to Fiji's modules/, $HOME/.m2/repository/ and Fiji's jars/ and plugins/ directories
 			String key = dependency.getKey();
 			if (localPOMCache.containsKey(key)) {
@@ -825,7 +867,9 @@ public class MiniMaven {
 				return cacheAndReturn(key, null);
 			}
 
+Refactor!!!
 			String path = mavenRepository.getPath() + "/" + dependency.groupId.replace('.', '/') + "/" + dependency.artifactId + "/";
+Is this still relevant???
 			if (dependency.version == null)
 				dependency.version = findLocallyCachedVersion(path);
 			if (dependency.version == null) {
@@ -853,15 +897,18 @@ public class MiniMaven {
 				if (dependency.version.startsWith("["))
 					dependency.version = parseVersion(new File(path, "maven-metadata-version.xml"));
 			} catch (FileNotFoundException e) { /* ignore */ }
+// Always construct from scratch (i.e. refactor!!!)
 			path += dependency.version + "/";
+Need to make sure that we try to update -SNAPSHOTs exactly once unless offlineMode.
 			if (dependency.version.endsWith("-SNAPSHOT")) try {
 				if (!maybeDownloadAutomatically(dependency, quiet, downloadAutomatically)) {
+Get rid of findInFijiDirectories(). It only hurts us now (and Maven does not do it, either).
 					File file = findInFijiDirectories(dependency);
 					if (file != null)
 						return fakePOM(file, dependency);
 					return null;
 				}
-				if (dependency.version.endsWith("-SNAPSHOT"))
+				if (downloadAutomatically)
 					dependency.setSnapshotVersion(parseSnapshotVersion(new File(path, "maven-metadata-snapshot.xml")));
 			} catch (FileNotFoundException e) { /* ignore */ }
 			else {
@@ -893,6 +940,7 @@ public class MiniMaven {
 					result.coordinate.version = dependency.version;
 					result.target = new File(result.directory, dependency.getJarName());
 				}
+Do we really need this?
 				if (result.parent == null)
 					result.parent = getRoot();
 			}
@@ -923,6 +971,7 @@ public class MiniMaven {
 			return localPOMCache.get(key);
 		}
 
+Get rid of it
 		protected File findInFijiDirectories(Coordinate dependency) {
 			for (String jarName : new String[] {
 				"jars/" + dependency.artifactId + "-" + dependency.version + ".jar",
@@ -960,6 +1009,7 @@ public class MiniMaven {
 			return true;
 		}
 
+This is not locally-cached, this is locally installed. And I doubt we still need it, everything has its version now
 		protected String findLocallyCachedVersion(String path) throws IOException {
 			File file = new File(path, "maven-metadata-local.xml");
 			if (!file.exists()) {
@@ -1167,7 +1217,9 @@ public class MiniMaven {
 	protected void downloadAndVerify(String repositoryURL, Coordinate dependency, boolean quiet) throws MalformedURLException, IOException, NoSuchAlgorithmException, ParserConfigurationException, SAXException {
 		String path = "/" + dependency.groupId.replace('.', '/') + "/" + dependency.artifactId + "/" + dependency.version + "/";
 		File directory = new File(mavenRepository, path);
+refactor into Coordinate.isSnapshot()
 		if (dependency.version.endsWith("-SNAPSHOT")) {
+move this check into download(dependency, quiet)
 			// Only check snapshots once per day
 			File snapshotMetaData = new File(directory, "maven-metadata-snapshot.xml");
 			if (System.currentTimeMillis() - snapshotMetaData.lastModified() < updateInterval * 60 * 1000l)
@@ -1176,6 +1228,7 @@ public class MiniMaven {
 			String message = quiet ? null : "Checking for new snapshot of " + dependency.artifactId;
 			String metadataURL = repositoryURL + path + "maven-metadata.xml";
 			downloadAndVerify(metadataURL, directory, snapshotMetaData.getName(), message);
+refactor this
 			String snapshotVersion = parseSnapshotVersion(snapshotMetaData);
 			if (snapshotVersion == null)
 				throw new IOException("No version found in " + metadataURL);
@@ -1185,6 +1238,7 @@ public class MiniMaven {
 				return;
 		}
 		else if (dependency.version.startsWith("[")) {
+refactor this		
 			path = "/" + dependency.groupId.replace('.', '/') + "/" + dependency.artifactId + "/";
 			directory = new File(mavenRepository, path);
 
@@ -1212,6 +1266,7 @@ public class MiniMaven {
 			downloadAndVerify(baseURL + dependency.getJarName(), directory, message);
 	}
 
+Get rid of this
 	protected void downloadAndVerify(String url, File directory, String message) throws IOException, NoSuchAlgorithmException {
 		downloadAndVerify(url, directory, null, message);
 	}
@@ -1239,6 +1294,7 @@ public class MiniMaven {
 		fileStream.close();
 	}
 
+refactor into minimaven.SnapshotVersion
 	protected static String parseSnapshotVersion(File xml) throws IOException, ParserConfigurationException, SAXException {
 		return parseSnapshotVersion(new FileInputStream(xml));
 	}
@@ -1280,6 +1336,7 @@ public class MiniMaven {
 		}
 	}
 
+refactor into minimaven.Version
 	protected static String parseVersion(File xml) throws IOException, ParserConfigurationException, SAXException {
 		return parseVersion(new FileInputStream(xml));
 	}
@@ -1370,6 +1427,7 @@ public class MiniMaven {
 		}
 	}
 
+move into minimaven.Util
 	protected static int hexNybble(int b) {
 		return (b < 'A' ? (b < 'a' ? b - '0' : b - 'a' + 10) : b - 'A' + 10) & 0xf;
 	}
@@ -1383,6 +1441,7 @@ public class MiniMaven {
 		directory.delete();
 	}
 
+Get rid of this
 	protected File download(URL url, File directory, String message) throws IOException {
 		return download(url, directory, null, message);
 	}
@@ -1452,6 +1511,7 @@ public class MiniMaven {
 		}
 	}
 
+Rename into offsetOfFirstNonDigit
 	protected static int firstNonDigit(String string) {
 		int length = string.length();
 		for (int i = 0; i < length; i++)
@@ -1460,6 +1520,7 @@ public class MiniMaven {
 		return length;
 	}
 
+move into minimaven.Util
 	protected static void ensureIJDirIsSet() {
 		String ijDir = System.getProperty("ij.dir");
 		if (ijDir != null && new File(ijDir).isDirectory())
@@ -1558,6 +1619,7 @@ public class MiniMaven {
 		}
 	}
 
+retain only this in fiji.build.MiniMaven
 	private final static String usage = "Usage: MiniMaven [command]\n"
 		+ "\tSupported commands: compile, run, compile-and-run, clean, get-dependencies";
 
@@ -1612,6 +1674,7 @@ public class MiniMaven {
 		else if (command.equals("classpath"))
 			miniMaven.err.println(pom.getClassPath(false));
 		else if (command.equals("list")) {
+Use localPOMCache instead
 			Set<POM> result = new TreeSet<POM>();
 			Stack<POM> stack = new Stack<POM>();
 			stack.push(pom.getRoot());
@@ -1630,6 +1693,7 @@ public class MiniMaven {
 			miniMaven.err.println("Unhandled command: " + command + "\n" + usage);
 	}
 
+move into minimaven.Util
 	protected static String getSystemProperty(String key, String defaultValue) {
 		String result = System.getProperty(key);
 		return result == null ? defaultValue : result;

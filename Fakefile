@@ -111,20 +111,10 @@ SUBMODULE_TARGETS=\
 	jars/autocomplete.jar \
 	jars/weka.jar \
 	jars/jython.jar \
-	jars/imglib.jar \
-	jars/imglib-algorithms.jar \
-	jars/imglib-ij.jar \
-	jars/imglib-io.jar \
-	jars/imglib2.jar \
-	jars/imglib2-algorithms.jar \
-	jars/imglib2-algorithms-gpl.jar \
-	jars/imglib2-ij.jar \
-	jars/imglib2-io.jar \
 	jars/mpicbg.jar \
 	jars/commons-math.jar \
 	jars/javassist.jar \
 	jars/jsch.jar \
-	jars/imglib-scripting.jar \
 	plugins/Image_5D.jar \
 	jars/ij-app.jar \
 
@@ -274,35 +264,10 @@ CLASSPATH(plugins/mpicbg_.jar)=jars/ij.jar:jars/mpicbg.jar
 plugins/mpicbg_.jar <- modules/mpicbg/
 CLASSPATH(jars/mpicbg.jar)=jars/ij.jar:jars/Jama.jar
 jars/mpicbg.jar <- modules/mpicbg/
-CLASSPATH(jars/imglib.jar)=jars/mpicbg.jar
 jars/imglib.jar <- modules/imglib/
-CLASSPATH(jars/imglib-ij.jar)=jars/ij.jar:jars/imglib.jar:jars/mpicbg.jar
 jars/imglib-ij.jar <- modules/imglib/
-CLASSPATH(jars/imglib-io.jar)=plugins/loci_tools.jar:jars/imglib.jar:jars/imglib-ij.jar:jars/ij.jar
-jars/imglib-io.jar <- modules/imglib/
-CLASSPATH(jars/imglib-algorithms.jar)=jars/Jama.jar:jars/imglib.jar:jars/edu_mines_jtk.jar:jars/mpicbg.jar
 jars/imglib-algorithms.jar <- modules/imglib/
-CLASSPATH(jars/imglib-scripting.jar)=jars/ij.jar:jars/imglib.jar:jars/imglib-io.jars:jars/imglib-algorithms.jar:jars/imglib-ij.jar:plugins/loci_tools.jar:jars/mpicbg.jar:jars/jfreechart.jar:jars/jcommon.jar:$JAVA3D_JARS
-jars/imglib-scripting.jar <- modules/imglib/
-CLASSPATH(jars/imglib-ops.jar)=jars/imglib.jar
-jars/imglib-ops.jar <- modules/imglib/
-#CLASSPATH(jars/imglib2.jar)=jars/mpicbg.jar
-jars/imglib2.jar <- modules/imglib/
-#CLASSPATH(jars/imglib2-ij.jar)=jars/ij.jar:jars/imglib2.jar:jars/mpicbg.jar
-CLASSPATH(jars/imglib2-ij.jar)=jars/ij.jar:jars/imglib2.jar:jars/mpicbg.jar
-jars/imglib2-ij.jar <- modules/imglib/
-CLASSPATH(jars/imglib2-io.jar)=plugins/loci_tools.jar:jars/imglib2.jar
-jars/imglib2-io.jar <- modules/imglib/
-CLASSPATH(jars/imglib2-algorithms.jar)=jars/imglib2.jar
-jars/imglib2-algorithms.jar <- modules/imglib/
-CLASSPATH(jars/imglib2-algorithms-gpl.jar)=jars/imglib2.jar:jars/imglib2-algorithms.jar:jars/edu_mines_jtk.jar:jars/mpicbg.jar
-jars/imglib2-algorithms-gpl.jar <- modules/imglib/
-CLASSPATH(jars/imglib2-scripting.jar)=jars/ij.jar:jars/imglib2.jar:jars/imglib2-io.jars:jars/imglib2-algorithms.jar:jars/imglib2-algorithms-gpl.jar:jars/imglib2-ij.jar:plugins/loci_tools.jar:jars/mpicbg.jar:jars/jfreechart.jar:jars/jcommon.jar:$JAVA3D_JARS
-jars/imglib2-scripting.jar <- modules/imglib/
-CLASSPATH(jars/imglib2-ops.jar)=jars/imglib2.jar
-jars/imglib2-ops.jar <- modules/imglib/
 plugins/loci_tools.jar <- modules/bio-formats/
-CLASSPATH(plugins/loci_tools.jar)=jars/imglib2.jar
 CLASSPATH(jars/VectorString.jar)=jars/ij.jar:jars/Jama.jar:$JAVA3D_JARS
 jars/VectorString.jar <- modules/TrakEM2/
 CLASSPATH(plugins/TrakEM2_.jar)=jars/ij.jar:jars/jai_core.jar:jars/jai_codec.jar:jars/VectorString.jar:jars/postgresql.jar:jars/jcommon.jar:jars/jfreechart.jar:jars/edu_mines_jtk.jar:jars/VIB-lib.jar:plugins/VIB_.jar:jars/mpicbg.jar:plugins/loci_tools.jar:plugins/bUnwarpJ_.jar:plugins/level_sets.jar:plugins/Fiji_Plugins.jar:jars/Jama.jar:jars/imglib.jar:jars/imglib-algorithms.jar:jars/imglib-ij.jar:plugins/Simple_Neurite_Tracer.jar:plugins/3D_Viewer.jar:plugins/Lasso_and_Blow_Tool.jar:plugins/mpicbg_.jar:$JAVA3D_JARS
@@ -319,7 +284,7 @@ jars/commons-math.jar <- modules/commons-math/
 jars/javassist.jar <- modules/javassist/
 jars/jsch.jar <- modules/jsch/
 COPYDEPENDENCIES(jars/ij-app.jar)=true
-jars/ij-app.jar <- jars/ij.jar jars/imglib2.jar modules/imagej2/
+jars/ij-app.jar <- jars/ij.jar modules/imagej2/
 CLASSPATH(plugins/Image_5D.jar)=jars/ij.jar
 plugins/Image_5D.jar <- modules/image5d/
 
@@ -535,9 +500,7 @@ precompile-submodules[] <- \
 	precompiled/autocomplete.jar \
 	precompiled/weka.jar \
 	precompiled/jython.jar \
-	precompiled/imglib.jar \
 	precompiled/commons-math.jar \
-	precompiled/imglib-algorithms.jar \
 	precompiled/javassist.jar \
 	precompiled/jsch.jar \
 
@@ -549,11 +512,6 @@ precompiled/rsyntaxtextarea.jar <- jars/rsyntaxtextarea.jar
 precompiled/autocomplete.jar <- jars/autocomplete.jar
 precompiled/weka.jar <- jars/weka.jar
 precompiled/jython.jar <- jars/jython.jar
-precompiled/imglib.jar <- jars/imglib.jar
-precompiled/imglib-algorithms.jar <- jars/imglib-algorithms.jar
-precompiled/imglib-ij.jar <- jars/imglib-ij.jar
-precompiled/imglib-io.jar <- jars/imglib-io.jar
-precompiled/imglib-scripting.jar <- jars/imglib-scripting.jar
 precompiled/commons-math.jar <- jars/commons-math.jar
 precompiled/javassist.jar <- jars/javassist.jar
 precompiled/jsch.jar <- jars/jsch.jar
