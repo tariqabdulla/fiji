@@ -272,7 +272,23 @@ public class NamedPointSet {
 			return false;
 		}
 	}
+	public boolean savePlainPointsFile( String savePath ) {
 
+		try {
+			FileOutputStream fos = new FileOutputStream(savePath);
+			Iterator<NamedPointWorld> i;
+			for(i=listIterator();i.hasNext();) {
+				NamedPointWorld p = i.next();
+				if(p.set) sb.append(p.toPlainPoints());
+			}
+			fos.write(sb.toString().getBytes("UTF-8"));
+			fos.close();
+			return true;
+		} catch( IOException e ) {
+			return false;
+		}
+	}
+	
 /*
 	public byte [] dataAsBytes( ) {
 

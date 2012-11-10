@@ -145,6 +145,10 @@ public class NamedPointWorld {
 		this.z = z;
 	}
 
+	public String toPlainPoints() {
+		return "name"+x+" "+y+" "+z+"/n";
+	}
+	
 	public String toIGS() {
 		return "landmark {\n\tname \""+escape(name)+"\"\n\tlocation "+
 			x+" "+y+" "+z+"\n}";

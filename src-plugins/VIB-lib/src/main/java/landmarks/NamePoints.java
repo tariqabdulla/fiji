@@ -255,6 +255,8 @@ class PointsDialog extends Dialog implements ActionListener, WindowListener {
 			loadButton.addActionListener(this);
 			igsSaveButton = new Button("Export to IGS");
 			igsSaveButton.addActionListener(this);
+			pointsSaveButton = new Button("Save Coordinates");
+			pointsSaveButton.addActionListener(this);
 			resetButton = new Button("Reset All");
 			resetButton.addActionListener(this);
 			closeButton = new Button("Close");
@@ -263,6 +265,7 @@ class PointsDialog extends Dialog implements ActionListener, WindowListener {
 			buttonsPanel.add(saveButton);
 			buttonsPanel.add(loadButton);
 			buttonsPanel.add(igsSaveButton);
+			buttonsPanel.add(pointsSaveButton);
 			buttonsPanel.add(resetButton);
 			buttonsPanel.add(closeButton);
 
@@ -344,6 +347,7 @@ class PointsDialog extends Dialog implements ActionListener, WindowListener {
 	Button saveButton;
 	Button loadButton;
 	Button igsSaveButton;
+	Button pointsSaveButton;
 	Button resetButton;
 	Button closeButton;
 
@@ -429,6 +433,8 @@ class PointsDialog extends Dialog implements ActionListener, WindowListener {
 			plugin.load();
 		} else if (source == igsSaveButton) {
 			plugin.save(".landmarks");
+		} else if (source == pointsSaveButton) {
+			plugin.save(".txt");	
 		} else if (source == resetButton) {
 			plugin.reset();
 		} else if (source == uploadButton) {
@@ -1437,6 +1443,8 @@ public class NamePoints implements FineTuneProgressListener {
 		boolean saveResult=false;
 		if(fileType.equalsIgnoreCase(".landmarks")) {
 			saveResult=points.saveIGSPointsFile(savePath);
+		} else if(fileType.equalsIgnoreCase(".txt")) {
+			saveResult=points.savePlainPointsFile(savePath);
 		} else {
 			saveResult=points.savePointsFile(savePath);
 		}
